@@ -17,9 +17,12 @@
     "express": "^4.22.1",
     "fastpriorityqueue": "^0.7.5",
     "jose": "^6.0.10",
+    "nanoid": "^3.3.6",
+    "obscenity": "^0.4.3",
     "puppeteer": "^24.40.0",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "seedrandom": "^3.0.5",
     "uuid": "^11.1.0",
     "ws": "^8.18.0",
     "zod": "^4.0.5"
