@@ -103,6 +103,25 @@ export class BrowserManager {
     };
   }
 
+  public async getPlayToken(): Promise<string> {
+    if (!this.page) throw new Error("BrowserManager not initialized");
+    return await this.page.evaluate(async () => {
+      try {
+        const response = await fetch("https://api.openfront.io/auth/refresh", {
+          method: "POST",
+          credentials: "include"
+        });
+        if (response.ok) {
+            const json = await response.json();
+            return json.jwt;
+        }
+      } catch (e) {
+          console.error("Token fetch error", e);
+      }
+      return crypto.randomUUID();
+    });
+  }
+
   public async fetchBinary(url: string): Promise<Uint8Array> {
     if (!this.page) throw new Error("BrowserManager not initialized");
     const base64 = await this.page.evaluate(async (u) => {

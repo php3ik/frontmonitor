@@ -25,11 +25,12 @@ export class GameMonitor {
     console.log(`GameMonitor connecting to ${wsUrl} for game ${this.gameID} via browser`);
     this.ws = await this.browserManager.createWebSocket(wsUrl, true);
 
-    this.ws.on("open", () => {
+    this.ws.on("open", async () => {
       console.log(`GameMonitor connected! Sending join intent...`);
+      const token = await this.browserManager.getPlayToken();
       const joinMsg: ClientJoinMessage = {
         type: "join",
-        token: randomUUID(), // Random UUID passes the token validation
+        token: token,
         gameID: this.gameID,
         username: "OracleBot",
         clanTag: null,
