@@ -37,6 +37,7 @@ app.post("/api/markets/:gameID/track", async (req, res) => {
   }
 
   const monitor = new GameMonitor(gameID, 20, browserManager);
+  monitor.start();
   activeGameMonitors.set(gameID, monitor);
 
   
