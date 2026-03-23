@@ -10,6 +10,7 @@ puppeteer.use(StealthPlugin());
 export class BrowserManager {
   private browser: Browser | null = null;
   private page: Page | null = null;
+  private socketEmitters = new Map<string, EventEmitter>();
 
   public async initialize() {
     console.log("BrowserManager: Launching headless browser...");
@@ -29,6 +30,20 @@ export class BrowserManager {
     this.page.on('console', msg => console.log('PAGE LOG:', msg.text()));
     this.page.on('pageerror', (err: any) => console.log('PAGE ERROR:', err.toString()));
     
+    // Globally exposed static router to prevent CDP race conditions
+    await this.page.exposeFunction('emitWsEvent', (id: string, event: string, data?: string, isBin: boolean = false) => {
+      const emitter = this.socketEmitters.get(id);
+      if (!emitter) return;
+      
+      if (event === "message" && data) {
+         emitter.emit("message", isBin ? Buffer.from(data, 'base64') : Buffer.from(data));
+      } else if (event === "error") {
+         emitter.emit("error", new Error(data || "Unknown Error"));
+      } else {
+         emitter.emit(event);
+      }
+    });
+
     console.log("BrowserManager: Navigating to https://openfront.io to solve Cloudflare challenge...");
     
     await this.page.goto("https://openfront.io", {
@@ -49,17 +64,7 @@ export class BrowserManager {
     
     const wsId = randomUUID().replace(/-/g, "");
     const emitter = new EventEmitter();
-
-    await this.page.exposeFunction(`onOpen_${wsId}`, () => emitter.emit("open"));
-    await this.page.exposeFunction(`onClose_${wsId}`, () => emitter.emit("close"));
-    await this.page.exposeFunction(`onError_${wsId}`, (err: any) => emitter.emit("error", err));
-    await this.page.exposeFunction(`onMessage_${wsId}`, (data: string, isBin: boolean) => {
-        if (isBin) {
-            emitter.emit("message", Buffer.from(data, 'base64'));
-        } else {
-            emitter.emit("message", Buffer.from(data));
-        }
-    });
+    this.socketEmitters.set(wsId, emitter);
 
     await this.page.evaluate((url, id, isBin) => {
         console.log(`Starting inner WebSocket connection for ${url}`);
@@ -67,9 +72,9 @@ export class BrowserManager {
         (window as any)[`ws_${id}`] = ws;
         if (isBin) ws.binaryType = 'arraybuffer';
         
-        ws.onopen = () => (window as any)[`onOpen_${id}`]();
-        ws.onclose = () => (window as any)[`onClose_${id}`]();
-        ws.onerror = (e) => (window as any)[`onError_${id}`]((e as any).message || "Unknown error");
+        ws.onopen = () => (window as any).emitWsEvent(id, "open");
+        ws.onclose = () => (window as any).emitWsEvent(id, "close");
+        ws.onerror = (e) => (window as any).emitWsEvent(id, "error", (e as any).message);
         ws.onmessage = async (e) => {
             if (e.data instanceof ArrayBuffer) {
                 let binary = '';
@@ -77,9 +82,9 @@ export class BrowserManager {
                 for (let i = 0; i < bytes.byteLength; i++) {
                     binary += String.fromCharCode(bytes[i]);
                 }
-                (window as any)[`onMessage_${id}`](window.btoa(binary), true);
+                (window as any).emitWsEvent(id, "message", window.btoa(binary), true);
             } else {
-                (window as any)[`onMessage_${id}`](e.data, false);
+                (window as any).emitWsEvent(id, "message", e.data, false);
             }
         };
     }, url, wsId, expectsBinary);
@@ -99,6 +104,7 @@ export class BrowserManager {
             await this.page!.evaluate((id) => {
                 (window as any)[`ws_${id}`].close();
             }, wsId);
+            this.socketEmitters.delete(wsId);
         }
     };
   }
