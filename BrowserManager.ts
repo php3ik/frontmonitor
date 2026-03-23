@@ -15,10 +15,13 @@ export class BrowserManager {
     console.log("BrowserManager: Launching headless browser...");
     this.browser = await puppeteer.launch({
       headless: false, // Running non-headless is the most reliable way to bypass Cloudflare locally
+      defaultViewport: null, // Avoid default 800x600 viewport
+      ignoreDefaultArgs: ["--enable-automation"], // Remove automation infobar and flags
       args: [
         '--no-sandbox', 
         '--disable-setuid-sandbox',
-        '--disable-blink-features=AutomationControlled'
+        '--disable-blink-features=AutomationControlled',
+        '--window-size=1280,720' // Set a realistic window size matching viewport
       ]
     });
 
