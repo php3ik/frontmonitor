@@ -10,22 +10,27 @@ Our objective is to serve real-time player leaderboards for downstream predictio
     - If you are using Linux/Mac, you can install NVM (Node Version Manager) and run `nvm install 20`.
 2. **NPM**: Automatically installed alongside Node.js.
 
-## Installation
+## Installation & Setup
 
-Clone the repository and install the dependencies from the root directory:
+Because this repository uses the core OpenFrontIO engine as a Git Submodule, you MUST use `--recursive` when cloning it to fetch the engine files automatically:
+
 ```bash
-cd projects/OpenFrontIO
+git clone --recursive https://github.com/php3ik/frontmonitor.git
+cd frontmonitor
 npm install
 ```
 
-This will naturally install all required packages including `puppeteer`, `puppeteer-extra`, and `puppeteer-extra-plugin-stealth` that power the headless network proxy.
+If you accidentally cloned it without `--recursive`, you can initialize the submodule manually:
+```bash
+git submodule update --init --recursive
+npm install
+```
 
 ## Running the Oracle Locally
 
 To start the FrontMonitor Oracle service:
 ```bash
-cd projects/OpenFrontIO
-npx tsx frontmonitor/index.ts
+npx tsx index.ts
 ```
 
 ### What Happens When You Run It:
