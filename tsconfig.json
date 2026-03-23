@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "baseUrl": ".",
+    "paths": {
+      "resources/*": ["./OpenFrontIO/resources/*"]
+    },
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "strictNullChecks": true,
+    "skipLibCheck": true,
+    "types": ["node"]
+  },
+  "include": [
+    "**/*.ts",
+    "OpenFrontIO/src/**/*"
+  ]
+}
