@@ -10,11 +10,19 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^5.2.1",
+    "@datastructures-js/priority-queue": "^6.3.3",
+    "colorjs.io": "^0.5.2",
+    "dompurify": "^3.3.2",
+    "dotenv": "^16.5.0",
+    "express": "^4.22.1",
+    "fastpriorityqueue": "^0.7.5",
+    "jose": "^6.0.10",
     "puppeteer": "^24.40.0",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2",
-    "zod": "^4.3.6"
+    "uuid": "^11.1.0",
+    "ws": "^8.18.0",
+    "zod": "^4.0.5"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
