@@ -87,8 +87,12 @@ export class BrowserManager {
     return {
         on: (event: string, cb: any) => emitter.on(event, cb),
         send: async (data: string) => {
-            await this.page!.evaluate((id, msg) => {
-                (window as any)[`ws_${id}`].send(msg);
+            await this.page!.evaluate(async (id, msg) => {
+                const ws = (window as any)[`ws_${id}`];
+                if (ws) {
+                    while (ws.readyState === 0) await new Promise(r => setTimeout(r, 10)); // Defeats connecting race condition
+                    ws.send(msg); // Will reliably fire when readyState=1
+                }
             }, wsId, data);
         },
         close: async () => {
