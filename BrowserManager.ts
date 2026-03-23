@@ -14,8 +14,12 @@ export class BrowserManager {
   public async initialize() {
     console.log("BrowserManager: Launching headless browser...");
     this.browser = await puppeteer.launch({
-      headless: "new" as any,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"]
+      headless: false, // Running non-headless is the most reliable way to bypass Cloudflare locally
+      args: [
+        '--no-sandbox', 
+        '--disable-setuid-sandbox',
+        '--disable-blink-features=AutomationControlled'
+      ]
     });
 
     this.page = await this.browser.newPage();
