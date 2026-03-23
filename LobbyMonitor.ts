@@ -41,8 +41,10 @@ export class LobbyMonitor {
   }
 
   private updateGamesCache(workerIndex: number, games: any) {
-    for (const game of games.games) {
-      this.activeGames.set(game.gameID, game);
+    for (const gameArray of Object.values(games.games)) {
+      for (const game of gameArray as any[]) {
+        this.activeGames.set(game.gameID, game);
+      }
     }
   }
 
