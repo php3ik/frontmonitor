@@ -1,0 +1,25 @@
+{
+  "name": "frontmonitor",
+  "version": "1.0.0",
+  "description": "This service is a robust Node.js and Puppeteer-based Oracle used to stream live game states from the `openfront.io` multiplayer servers. It completely bypasses Cloudflare bot protection and natively integrates with the OpenFront engine to reproduce exact, deterministic game states.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.2.1",
+    "puppeteer": "^24.40.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.5.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}
